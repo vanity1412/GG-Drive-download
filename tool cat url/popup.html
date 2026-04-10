@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Drive URL Cleaner</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h2>📥 Google Drive Downloader</h2>
+    <p>Dán URL Google Drive để tải về:</p>
+    
+    <div class="settings-group">
+      <label class="setting-label">
+        <input type="radio" name="downloadMethod" value="chrome" checked>
+        <span>Tải bằng Chrome (mặc định)</span>
+      </label>
+      <label class="setting-label">
+        <input type="radio" name="downloadMethod" value="copy">
+        <span>Copy link đã làm sạch</span>
+      </label>
+    </div>
+    
+    <div id="urlContainer">
+      <div class="input-group" data-index="1">
+        <div class="input-header">
+          <label>Link 1:</label>
+          <button class="remove-btn hidden" data-index="1">✕</button>
+        </div>
+        <textarea class="url-input" placeholder="Dán URL tại đây..."></textarea>
+      </div>
+    </div>
+    
+    <button id="addBtn" class="add-btn">+ Thêm link</button>
+    
+    <button id="downloadBtn" class="download-btn">⬇️ Xử lý tất cả</button>
+    
+    <button id="clearBtn" class="clear-btn">🗑️ Xóa tất cả</button>
+    
+    <div id="cleanedLinksContainer" class="cleaned-links-container hidden">
+      <div class="cleaned-header">
+        <h3>✅ Link đã làm sạch:</h3>
+        <button id="copyAllBtn" class="copy-all-btn">📋 Copy tất cả</button>
+      </div>
+      <div id="cleanedLinksList"></div>
+    </div>
+    
+    <div id="result" class="result hidden">
+      <p class="success"></p>
+    </div>
+    
+    <div id="error" class="error hidden"></div>
+    
+    <div class="info-box">
+      <p><strong>💡 Lưu ý:</strong></p>
+      <ul>
+        <li><strong>Chrome:</strong> Tải bình thường</li>
+        <li><strong>Copy:</strong> Hiển thị link để copy thủ công</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
