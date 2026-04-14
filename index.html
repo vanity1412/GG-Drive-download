@@ -88,7 +88,7 @@
     }
     .result-box {
       width: 100%;
-      min-height: 90px;
+      min-height: 110px;
       white-space: pre-wrap;
       word-break: break-word;
       font-family: Consolas, monospace;
@@ -112,7 +112,7 @@
   <div class="wrap">
     <div class="card">
       <h1>Google Drive Link Cleaner</h1>
-      <p>Dán link Google Drive vào ô bên dưới. Hệ thống sẽ tự động xử lý và hiện kết quả ngay phía dưới.</p>
+      <p>Dán link Google Drive vào ô bên dưới. Hệ thống sẽ tự động xử lý và tự bôi đen kết quả phía dưới để bạn copy sang IDM.</p>
 
       <textarea id="inputUrl" placeholder="Dán link Google Drive vào đây..."></textarea>
 
@@ -125,7 +125,7 @@
 
       <div class="output">
         <div class="label">Kết quả</div>
-        <div id="result" class="result-box">Chưa có dữ liệu.</div>
+        <textarea id="result" class="result-box" readonly>Chưa có dữ liệu.</textarea>
         <div id="status" class="status"></div>
       </div>
     </div>
@@ -145,6 +145,12 @@
       status.className = 'status ' + type;
     }
 
+    function selectResultText() {
+      result.focus();
+      result.select();
+      result.setSelectionRange(0, result.value.length);
+    }
+
     function cleanDriveUrl(url) {
       let cleaned = url.trim();
       if (!cleaned) return '';
@@ -160,18 +166,11 @@
         throw new Error('Đây không phải link Google Drive.');
       }
 
-      // Xóa range=...
       cleaned = cleaned.replace(/([?&])range=[^&]*&/g, '$1');
       cleaned = cleaned.replace(/([?&])range=[^&]*$/g, '');
-
-      // Chỉ xóa "=1&srfvp=1" sau "ump", giữ lại "&ump"
       cleaned = cleaned.replace(/([?&]ump)=1&srfvp=1(?=&|$)/g, '$1');
-
-      // Nếu còn srfvp đứng riêng lẻ thì xóa
       cleaned = cleaned.replace(/([?&])srfvp=[^&]*&/g, '$1');
       cleaned = cleaned.replace(/([?&])srfvp=[^&]*$/g, '');
-
-      // Dọn ký tự thừa
       cleaned = cleaned.replace(/\?&/g, '?');
       cleaned = cleaned.replace(/&&+/g, '&');
       cleaned = cleaned.replace(/[?&]$/g, '');
@@ -179,11 +178,11 @@
       return cleaned;
     }
 
-    function updateOutput() {
+    function updateOutput(autoSelect = true) {
       const value = inputUrl.value.trim();
 
       if (!value) {
-        result.textContent = 'Chưa có dữ liệu.';
+        result.value = 'Chưa có dữ liệu.';
         setStatus('', '');
         openBtn.href = '#';
         openBtn.style.pointerEvents = 'none';
@@ -193,13 +192,17 @@
 
       try {
         const cleaned = cleanDriveUrl(value);
-        result.textContent = cleaned;
-        setStatus('Đã xử lý link thành công.', 'ok');
+        result.value = cleaned;
+        setStatus('Đã xử lý link thành công. Kết quả đã được bôi đen sẵn.', 'ok');
         openBtn.href = cleaned;
         openBtn.style.pointerEvents = 'auto';
         openBtn.style.opacity = '1';
+
+        if (autoSelect) {
+          setTimeout(selectResultText, 10);
+        }
       } catch (err) {
-        result.textContent = 'Không thể xử lý.';
+        result.value = 'Không thể xử lý.';
         setStatus(err.message, 'err');
         openBtn.href = '#';
         openBtn.style.pointerEvents = 'none';
@@ -207,17 +210,17 @@
       }
     }
 
-    inputUrl.addEventListener('input', updateOutput);
+    inputUrl.addEventListener('input', () => updateOutput(true));
 
     inputUrl.addEventListener('paste', () => {
-      setTimeout(updateOutput, 20);
+      setTimeout(() => updateOutput(true), 20);
     });
 
     pasteBtn.addEventListener('click', async () => {
       try {
         const text = await navigator.clipboard.readText();
         inputUrl.value = text;
-        updateOutput();
+        updateOutput(true);
       } catch (err) {
         setStatus('Trình duyệt chặn đọc clipboard. Hãy Ctrl+V trực tiếp vào ô nhập.', 'err');
         inputUrl.focus();
@@ -225,7 +228,7 @@
     });
 
     copyBtn.addEventListener('click', async () => {
-      const text = result.textContent;
+      const text = result.value;
       if (!text || text === 'Chưa có dữ liệu.' || text === 'Không thể xử lý.') {
         setStatus('Chưa có kết quả để copy.', 'err');
         return;
@@ -234,18 +237,26 @@
       try {
         await navigator.clipboard.writeText(text);
         setStatus('Đã copy kết quả.', 'ok');
+        selectResultText();
       } catch (err) {
-        setStatus('Không thể copy tự động. Hãy bôi đen và copy thủ công.', 'err');
+        selectResultText();
+        setStatus('Đã bôi đen kết quả. Hãy nhấn Ctrl+C để copy.', 'ok');
       }
     });
 
     clearBtn.addEventListener('click', () => {
       inputUrl.value = '';
-      updateOutput();
+      result.value = 'Chưa có dữ liệu.';
+      setStatus('', '');
+      openBtn.href = '#';
+      openBtn.style.pointerEvents = 'none';
+      openBtn.style.opacity = '.5';
       inputUrl.focus();
     });
 
-    updateOutput();
+    result.addEventListener('click', selectResultText);
+
+    updateOutput(false);
   </script>
 </body>
 </html>
