@@ -8,39 +8,14 @@
 </head>
 <body>
   <div class="container">
-    <h2>📥 Google Drive Downloader</h2>
-    <p>Dán URL Google Drive vào đây:</p>
+    <h2>🔗 Google Drive Link Cleaner</h2>
+    <p>Dán link Google Drive để tự động mở tab mới</p>
     
-    <div id="urlContainer">
-      <div class="input-group" data-index="1">
-        <div class="input-header">
-          <label>Link 1:</label>
-          <button class="remove-btn hidden" data-index="1">✕</button>
-        </div>
-        <textarea class="url-input" placeholder="Dán URL tại đây..."></textarea>
-      </div>
-    </div>
+    <button id="pasteBtn" class="paste-btn">📋 Dán từ Clipboard</button>
     
-    <button id="addBtn" class="add-btn">+ Thêm link</button>
+    <textarea id="urlInput" placeholder="Hoặc dán link vào đây..."></textarea>
     
-    <button id="clearBtn" class="clear-btn">🗑️ Xóa tất cả</button>
-    
-    <div id="cleanedLinksContainer" class="cleaned-links-container hidden">
-      <div class="cleaned-header">
-        <h3>✅ Link đã làm sạch:</h3>
-        <div class="header-actions">
-          <button id="copyAllBtn" class="copy-all-btn">📋 Copy tất cả</button>
-          <button id="downloadAllBtn" class="download-all-btn">⬇️ Tải tất cả</button>
-        </div>
-      </div>
-      <div id="cleanedLinksList"></div>
-    </div>
-    
-    <div id="result" class="result hidden">
-      <p class="success"></p>
-    </div>
-    
-    <div id="error" class="error hidden"></div>
+    <div id="status" class="status hidden"></div>
   </div>
   
   <script src="popup.js"></script>
